@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: neo4j
+  name: neo4j-haproxy
+spec:
+#  strategy: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: neo4j
+  template:
+    metadata:
+      labels:
+        app: neo4j
+    spec:
+      imagePullSecrets:
+        - name: sipregistrykey
+      containers:
+      - image: docker.digital.homeoffice.gov.uk/sip-docker/neo4j-haproxy:latest
+        imagePullPolicy: Always
+        name: neo4j-haproxy
+        resources:
+          limits:
+            memory: "1G"
+            cpu: "400m"
+        ports:
+        - containerPort: 7473
+          name: "https"
+        env:
+        - name: NAMESPACE
+          valueFrom:
+           fieldRef:
+             fieldPath: metadata.namespace
+        - name: AUTH
+          valueFrom:
+            secretKeyRef:
+              name: neo4j-auth
+              key: auth
+        - name: "proxy"
+          value: neo4j-1.${NAMESPACE}.svc.cluster.local:7473;neo4j-2.${NAMESPACE}.svc.cluster.local:7473;neo4j-3.${NAMESPACE}.svc.cluster.local:7473;neo4j-4.${NAMESPACE}.svc.cluster.local:7473;neo4j-5.${NAMESPACE}.svc.cluster.local:7473
+      restartPolicy: Always  
