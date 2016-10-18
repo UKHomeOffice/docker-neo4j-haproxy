@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #expand any variables within proxy
-eval proxy=\"$proxy\"
-if [ -n "$proxy" ]; then
-  echo "Configuring these proxies in the config: ${proxy}"
+eval PROXY=\"$PROXY\"
+if [ -n "$PROXY" ]; then
+  echo "Configuring these proxies in the config: ${PROXY}"
   
-  node_dirty=$(echo $proxy | tr ";" "\n")
+  node_dirty=$(echo $PROXY | tr ";" "\n")
   n=0
   for node_clean in $node_dirty
   do 
